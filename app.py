@@ -8,18 +8,15 @@ app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
-# получить параметры query и file_name из request.args, при ошибке вернуть ошибку 400
-# проверить, что файла file_name существует в папке DATA_DIR, при ошибке вернуть ошибку 400
-# с помощью функционального программирования (функций filter, map), итераторов/генераторов сконструировать запрос
-# вернуть пользователю сформированный результат
-
-# Использован файловый дескриптор как генератор.
-# Применены функции map, filter, sorted, list, set (или dict, или counter).
-# Решение позволяет конструировать запрос, например, **cmd1=filter&value1=POST, cmd2=limit&value2=5.**
-# Использованы lambda-функции.
-
 
 def construct_query(iter_obj, cmd, value):
+    """
+    конструктор запроса с применением фильтров и передаваемых в фильтр значений
+    :param iter_obj:
+    :param cmd:
+    :param value:
+    :return:
+    """
     result = map(lambda x: x.strip(), iter_obj)
 
     if cmd == "filter":
@@ -65,9 +62,11 @@ def perform_query():
             result_second = construct_query(result_first, cmd_2, val_2)
             result_final = "\n".join(result_second)
     except:
-        return "Problem with reading file."
+        return "Problem with reading file or Operation unsuccessful."
 
+    # для удобства информацию из запроса можно просмотреть 
     print(f"cmd_1: {cmd_1}, val_1: {val_1}, cmd_2: {cmd_2}, val_2: {val_2}, file_name: {file_name}")
+
     return app.response_class(result_final, content_type="text/plain")
 
 
