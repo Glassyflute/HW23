@@ -26,7 +26,7 @@ def construct_query(iter_obj, cmd, value):
         result = filter(lambda x: value in x, result)
     if cmd == "map":
         value = int(value)
-        result = map(lambda x: x.strip(" ")[value], result)
+        result = map(lambda x: x.split(" ")[value], result)
     if cmd == "unique":
         result = set(result)
     if cmd == "sort":
@@ -57,7 +57,7 @@ def perform_query():
     # проверяем, что файл file_name существует в нужной папке DATA_DIR
     file_path = os.path.join(DATA_DIR, file_name)
     if not os.path.exists(file_path):
-        return BadRequest(description=f"Bad Request. File {file_name} was not found. file_path is {file_path}, data_dir is {DATA_DIR}")
+        return BadRequest(description=f"Bad Request. File {file_name} was not found.")
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
