@@ -1,8 +1,8 @@
 import os
+import logging
 
 from flask import Flask, request
-from werkzeug.exceptions import BadRequest
-
+logging.basicConfig(filename="basic.log", level=logging.DEBUG)
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -49,12 +49,13 @@ def perform_query():
             return {"error": "Missing first parameters pair or file name."}, 400
 
     except:
-        return BadRequest(description="Bad Request. Check your query parameters.")
+        print("here is except for 4 params")
+        return {"error": "Bad Request. Check your query parameters."}, 400
 
     # проверяем, что файл file_name существует в нужной папке DATA_DIR
     file_path = os.path.join(DATA_DIR, file_name)
     if not os.path.exists(file_path):
-        return BadRequest(description=f"Bad Request. File {file_name} was not found.")
+        return {"error": "Bad Request. File was not found."}, 400
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -62,10 +63,10 @@ def perform_query():
             result_second = construct_query(result_first, cmd_2, val_2)
             result_final = "\n".join(result_second)
     except:
-        return "Problem with reading file or Operation unsuccessful."
+        return {"error": "Problem with reading file or Operation unsuccessful."}, 405
 
-    # для удобства информацию из запроса можно просмотреть 
-    print(f"cmd_1: {cmd_1}, val_1: {val_1}, cmd_2: {cmd_2}, val_2: {val_2}, file_name: {file_name}")
+    # для удобства информацию из запроса можно просмотреть в логе
+    logging.debug(f"cmd_1: {cmd_1}, val_1: {val_1}, cmd_2: {cmd_2}, val_2: {val_2}, file_name: {file_name}")
 
     return app.response_class(result_final, content_type="text/plain")
 
